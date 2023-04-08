@@ -1,1 +1,4 @@
-<app-map></app-map>
+<div *ngIf="options && marcerCoords" class="container">
+  <app-map [options]="options" [layersControl]="layersControl" (map$)="receiveMap($event)" (zoom$)="receiveZoom($event)"
+    id='main-map' [marcerCoords]="marcerCoords"></app-map>
+</div>
