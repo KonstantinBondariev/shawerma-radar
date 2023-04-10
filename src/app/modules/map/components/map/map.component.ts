@@ -28,7 +28,7 @@ import {
   marker,
 } from 'leaflet';
 import { GeolocationService } from 'src/app/services/geolocation-service.service';
-
+import { userData } from 'src/app/modules/shared/data/userData';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -73,22 +73,28 @@ export class MapComponent implements OnInit, OnDestroy {
     },
   };
 
-  @Input() marcerCoords = {
-    lat: 23.810331,
-    lon: 90.412521,
+  @Input() userСoordinates!: {
+    lat: number;
+    lon: number;
   };
 
-  popupText = 'Some popup text';
+  @Input() deners!: {
+    name: string;
+    coordinates: { lat: number; lon: number };
+    rating: string;
+  }[];
 
-  markerIcon = {
+  popupRollText = 'Shawerma';
+
+  markerRollIcon = {
     icon: L.icon({
-      iconSize: [25, 41],
+      iconSize: [15, 32],
       iconAnchor: [10, 41],
       popupAnchor: [2, -40],
       // specify the path here
-      iconUrl: 'assets/img/myLocation.png',
-      shadowUrl:
-        'https://unpkg.com/leaflet@1.4.0/dist/images/marker-shadow.png',
+      iconUrl: 'assets/img/roll.png',
+      // shadowUrl:
+      //   'https://unpkg.com/leaflet@1.4.0/dist/images/marker-shadow.png',
     }),
   };
 
@@ -97,12 +103,30 @@ export class MapComponent implements OnInit, OnDestroy {
 
   constructor(private geolocationService: GeolocationService) {}
 
-  initMarkers() {
-    const popupInfo = `<b style="color: red; background-color: white">${this.popupText}</b>`;
-
-    L.marker([this.marcerCoords.lat, this.marcerCoords.lon], this.markerIcon)
+  addDenersMarkers(doner: {
+    name: string;
+    coordinates: { lat: number; lon: number };
+    rating: string;
+  }) {
+    L.marker(
+      [doner.coordinates.lat, doner.coordinates.lon],
+      this.markerRollIcon
+    )
       .addTo(this.map)
-      .bindPopup(popupInfo);
+      .bindPopup(
+        `<b style="color: black; background-color: white">${doner.name}</b>`
+      );
+  }
+
+  initMarkers() {
+    L.marker(
+      [this.userСoordinates.lat, this.userСoordinates.lon],
+      userData.markerUserIcon
+    )
+      .addTo(this.map)
+      .bindPopup(userData.popupUserInfo);
+
+    this.deners.forEach((dener) => this.addDenersMarkers(dener));
   }
 
   ngOnInit() {}

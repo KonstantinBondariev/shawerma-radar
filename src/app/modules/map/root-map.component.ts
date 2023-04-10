@@ -1,18 +1,8 @@
-import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { GeolocationService } from 'src/app/services/geolocation-service.service';
+import { deners } from '../shared/data/denerData';
 
-import {
-  Map,
-  Control,
-  DomUtil,
-  ZoomAnimEvent,
-  Layer,
-  MapOptions,
-  tileLayer,
-  latLng,
-  circle,
-  polygon,
-} from 'leaflet';
+import { Map, MapOptions, tileLayer, latLng, circle, polygon } from 'leaflet';
 @Component({
   selector: 'root-map',
   templateUrl: './root-map.component.html',
@@ -21,7 +11,8 @@ import {
 export class RootMapComponent implements OnInit {
   options!: MapOptions;
   layersControl!: any;
-  marcerCoords!: { lat: number; lon: number };
+  currentCoord!: { lat: number; lon: number };
+  deners = deners;
 
   constructor(private geolocationService: GeolocationService) {
     this.geolocationService.getLocation().then((res) => {
@@ -30,7 +21,7 @@ export class RootMapComponent implements OnInit {
         res.coords.latitude,
         res.coords.longitude
       );
-      this.marcerCoords = {
+      this.currentCoord = {
         lat: res.coords.latitude,
         lon: res.coords.longitude,
       };
@@ -38,12 +29,6 @@ export class RootMapComponent implements OnInit {
   }
 
   ngOnInit(): void {}
-
-  setClientGeoLocation(): void {
-    this.geolocationService.getLocation().then((res) => {
-      console.log(res);
-    });
-  }
 
   setOptions(latitude: number, longitude: number): MapOptions {
     return {
