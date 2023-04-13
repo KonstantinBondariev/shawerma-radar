@@ -27,8 +27,12 @@ import {
   icon,
   marker,
 } from 'leaflet';
+
 import { GeolocationService } from 'src/app/services/geolocation-service.service';
 import { userData } from 'src/app/modules/shared/data/userData';
+import 'leaflet-rotatedmarker';
+import 'leaflet-geodesy';
+
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -78,7 +82,7 @@ export class MapComponent implements OnInit, OnDestroy {
     lon: number;
   };
 
-  @Input() deners!: {
+  @Input() doners!: {
     name: string;
     coordinates: { lat: number; lon: number };
     rating: string;
@@ -89,7 +93,7 @@ export class MapComponent implements OnInit, OnDestroy {
   markerRollIcon = {
     icon: L.icon({
       iconSize: [15, 32],
-      iconAnchor: [10, 41],
+      iconAnchor: [7.5, 32],
       popupAnchor: [2, -40],
       // specify the path here
       iconUrl: 'assets/img/roll.png',
@@ -100,6 +104,10 @@ export class MapComponent implements OnInit, OnDestroy {
 
   public map!: Map;
   public zoom!: number;
+
+  public line!: any;
+  public prevLine!: any;
+  lines: any[] = [];
 
   constructor(private geolocationService: GeolocationService) {}
 
@@ -126,7 +134,10 @@ export class MapComponent implements OnInit, OnDestroy {
       .addTo(this.map)
       .bindPopup(userData.popupUserInfo);
 
-    this.deners.forEach((dener) => this.addDenersMarkers(dener));
+    this.doners.forEach((doner) => {
+      this.addDenersMarkers(doner);
+      this.calculateDistance(doner);
+    });
   }
 
   ngOnInit() {}
@@ -142,10 +153,63 @@ export class MapComponent implements OnInit, OnDestroy {
     this.zoom = map.getZoom();
     this.zoom$.emit(this.zoom);
     this.initMarkers();
+    map.on('move', () => {
+      this.updateLines(this.doners, map);
+    });
   }
 
   onMapZoomEnd(e: ZoomAnimEvent | any) {
     this.zoom = e.target.getZoom();
     this.zoom$.emit(this.zoom);
+  }
+
+  calculateDistance(doner: {
+    name: string;
+    coordinates: { lat: number; lon: number };
+    rating: string;
+  }) {
+    var observer = L.latLng(this.userСoordinates.lat, this.userСoordinates.lon); // координаты наблюдателя
+    var target = L.latLng(doner.coordinates.lat, doner.coordinates.lon); // координаты объекта
+    var distance = observer.distanceTo(target); // вычисляем направление на объект
+
+    console.log(distance, 'm');
+  }
+
+  updateLines(
+    doners: {
+      name: string;
+      coordinates: { lat: number; lon: number };
+      rating: string;
+    }[],
+    map: L.Map
+  ) {
+    if (this.lines) {
+      this.lines.forEach((line) => line.remove());
+    }
+
+    const center = map.getCenter();
+    this.lines = [];
+
+    doners.forEach((doner) => {
+      const latLngs = [
+        center,
+        L.latLng(doner.coordinates.lat, doner.coordinates.lon),
+      ];
+      const polyline = L.polyline(latLngs, { color: 'red' }).addTo(map);
+      this.lines.push(polyline);
+    });
+  }
+
+  lineF(doner: {
+    name: string;
+    coordinates: { lat: number; lon: number };
+    rating: string;
+  }) {
+    // создаем объекты L.LatLng для начальной и конечной точек линии
+    const start = L.latLng(this.userСoordinates.lat, this.userСoordinates.lon);
+    const end = L.latLng(doner.coordinates.lat, doner.coordinates.lon);
+
+    // создаем линию, соединяющую начальную и конечную точки
+    const polyline = L.polyline([start, end], { color: 'red' }).addTo(this.map);
   }
 }

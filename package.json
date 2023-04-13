@@ -21,6 +21,8 @@
     "@asymmetrik/ngx-leaflet": "^15.0.1",
     "@types/leaflet": "^1.9.3",
     "leaflet": "^1.9.3",
+    "leaflet-geodesy": "^0.2.1",
+    "leaflet-rotatedmarker": "^0.2.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"
