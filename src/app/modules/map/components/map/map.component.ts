@@ -244,7 +244,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
       const intersection = turf.lineIntersect(line2, rectangleGeojson);
 
-      if (intersection) {
+      if (intersection.features[0]) {
         console.log(intersection);
         const intersectionPoint = L.latLng(
           intersection.features[0].geometry.coordinates[1],
