@@ -231,7 +231,7 @@ export class MapComponent implements OnInit, OnDestroy {
           // shadowSize: [68, 95],
           // shadowAnchor: [22, 94],
         }),
-        title: 'hhgj',
+
         rotationAngle: angleInDegrees,
         rotationOrigin: 'center',
       };
