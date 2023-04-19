@@ -1,4 +1,11 @@
-<div *ngIf="options && currentCoord" class="container">
-  <app-map [options]="options" [layersControl]="layersControl" (map$)="receiveMap($event)" (zoom$)="receiveZoom($event)"
-    id='main-map' [userСoordinates]="currentCoord" [doners]="deners"></app-map>
+<div class="container">
+
+  <div *ngIf="options && currentCoord" class="map-container">
+    <app-map [options]="options" [layersControl]="layersControl" (map$)="receiveMap($event)"
+      (zoom$)="receiveZoom($event)" id='main-map' [userСoordinates]="currentCoord" [doners]="deners"></app-map>
+  </div>
+
+  <div class="slider">
+    <app-slider (newItemEvent)="addItem($event)"></app-slider>
+  </div>
 </div>

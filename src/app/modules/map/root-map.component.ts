@@ -14,6 +14,19 @@ export class RootMapComponent implements OnInit {
   currentCoord!: { lat: number; lon: number };
   deners = deners;
 
+  radiusValue!: number;
+
+  addItem(newItem: number) {
+    this.radiusValue = newItem;
+  }
+
+  log() {
+    console.log('jjjj', this.radiusValue);
+  }
+
+  private map!: Map;
+  private zoom!: number;
+
   constructor(private geolocationService: GeolocationService) {
     this.geolocationService.getLocation().then((res) => {
       this.options = this.setOptions(res.coords.latitude, res.coords.longitude);
@@ -69,9 +82,6 @@ export class RootMapComponent implements OnInit {
       },
     };
   }
-
-  private map!: Map;
-  private zoom!: number;
 
   receiveMap(map: Map) {
     this.map = map;
