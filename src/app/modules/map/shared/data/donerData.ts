@@ -1,4 +1,6 @@
-export const deners = [
+import { Doner } from '../types/doner';
+
+export const doners: Doner[] = [
   {
     name: 'dener1',
     coordinates: { lat: 50.45472186466349, lon: 30.50542703206762 },

@@ -1,5 +1,12 @@
-<mat-slider class="example-margin" [disabled]="disabled" [max]="max" [min]="min" [step]="step" [discrete]="thumbLabel"
-  [showTickMarks]="showTicks">
-  <input matSliderThumb [(ngModel)]="value">
-  {{value}}
-</mat-slider>
+<div class="container">
+  <div class="value">
+    <div class="value__title">Search doners in radius:</div>
+    <div>{{value}} m</div>
+  </div>
+  <div class="slider">
+    <mat-slider class="slider__item" [disabled]="disabled" [max]="max" [min]="min" [step]="step" [discrete]="thumbLabel"
+      [showTickMarks]="showTicks">
+      <input matSliderThumb [(ngModel)]="value">
+    </mat-slider>
+  </div>
+</div>

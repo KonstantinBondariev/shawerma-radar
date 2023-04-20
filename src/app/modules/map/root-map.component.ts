@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { GeolocationService } from 'src/app/services/geolocation-service.service';
-import { deners } from '../shared/data/denerData';
+import { doners } from './shared/data/donerData';
 
 import { Map, MapOptions, tileLayer, latLng, circle, polygon } from 'leaflet';
+import { Doner } from './shared/types/doner';
 @Component({
   selector: 'root-map',
   templateUrl: './root-map.component.html',
@@ -12,20 +13,13 @@ export class RootMapComponent implements OnInit {
   options!: MapOptions;
   layersControl!: any;
   currentCoord!: { lat: number; lon: number };
-  deners = deners;
+  doners: Doner[] = doners;
 
   radiusValue!: number;
 
   addItem(newItem: number) {
     this.radiusValue = newItem;
   }
-
-  log() {
-    console.log('jjjj', this.radiusValue);
-  }
-
-  private map!: Map;
-  private zoom!: number;
 
   constructor(private geolocationService: GeolocationService) {
     this.geolocationService.getLocation().then((res) => {
@@ -81,13 +75,5 @@ export class RootMapComponent implements OnInit {
         ]),
       },
     };
-  }
-
-  receiveMap(map: Map) {
-    this.map = map;
-  }
-
-  receiveZoom(zoom: number) {
-    this.zoom = zoom;
   }
 }

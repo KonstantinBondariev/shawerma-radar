@@ -11,13 +11,13 @@ export class SliderComponent implements DoCheck {
   min = 0;
   showTicks = false;
   step = 250;
-  thumbLabel = true;
+  thumbLabel = false;
   value = 500;
 
-  @Output() newItemEvent = new EventEmitter<number>();
+  @Output() radiusValue = new EventEmitter<number>();
 
   addNewItem(value: number) {
-    this.newItemEvent.emit(value);
+    this.radiusValue.emit(value);
   }
 
   ngDoCheck(): void {
