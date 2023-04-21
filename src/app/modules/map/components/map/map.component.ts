@@ -137,7 +137,7 @@ export class MapComponent implements OnDestroy, OnChanges {
   openDialog(e: L.LeafletMouseEvent) {
     const dialogRef = this.dialog.open(NewDonerFormComponent, {
       data: { e },
-      width: '30%',
+      width: document.documentElement.clientWidth < 800 ? '95%' : '30%',
     });
 
     dialogRef.afterClosed().subscribe(() => {
