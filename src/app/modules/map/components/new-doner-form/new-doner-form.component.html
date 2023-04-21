@@ -17,8 +17,8 @@
     </mat-form-field>
 
     <div>
-      <button [disabled]="newDonerForm.invalid" mat-raised-button color="primary" [mat-dialog-close]="onSubmit()"
-        cdkFocusInitial>Add new doner</button>
+      <button [disabled]="newDonerForm.invalid" mat-raised-button color="primary" [mat-dialog-close]=""
+        (click)="onSubmit()" cdkFocusInitial>Add new doner</button>
     </div>
   </form>
 </div>

@@ -4,6 +4,7 @@ import { doners } from './shared/data/donerData';
 
 import { Map, MapOptions, tileLayer, latLng, circle, polygon } from 'leaflet';
 import { Doner } from './shared/types/doner';
+import { GetDonersDataService } from './services/get-doners-data.service';
 @Component({
   selector: 'root-map',
   templateUrl: './root-map.component.html',
@@ -21,7 +22,10 @@ export class RootMapComponent implements OnInit {
     this.radiusValue = newItem;
   }
 
-  constructor(private geolocationService: GeolocationService) {
+  constructor(
+    private geolocationService: GeolocationService,
+    private getDonersData: GetDonersDataService
+  ) {
     this.geolocationService.getLocation().then((res) => {
       this.options = this.setOptions(res.coords.latitude, res.coords.longitude);
       this.layersControl = this.setOverLays(
@@ -35,7 +39,9 @@ export class RootMapComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.getDoners();
+  }
 
   setOptions(latitude: number, longitude: number): MapOptions {
     return {
@@ -75,5 +81,9 @@ export class RootMapComponent implements OnInit {
         ]),
       },
     };
+  }
+
+  getDoners() {
+    this.getDonersData.getDeners().subscribe((res) => (this.doners = res));
   }
 }

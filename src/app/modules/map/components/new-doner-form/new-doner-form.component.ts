@@ -17,6 +17,7 @@ import {
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 import { NewDonerService } from '../../services/new-doner.service';
+import { Doner } from '../../shared/types/doner';
 
 @Component({
   selector: 'app-new-doner-form',
@@ -24,20 +25,17 @@ import { NewDonerService } from '../../services/new-doner.service';
   styleUrls: ['./new-doner-form.component.scss'],
 })
 export class NewDonerFormComponent implements OnInit, OnChanges {
-  newDonerForm: FormGroup = new FormGroup({
-    donerName: new FormControl('', [Validators.required, this.customValidator]),
-    review: new FormControl(''),
-  });
+  newDonerForm!: FormGroup;
 
   constructor(
     private newDonerService: NewDonerService,
     public dialogRef: MatDialogRef<NewDonerFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {
-    console.log(this.data);
-  }
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.initializeForm();
+  }
 
   ngOnChanges(changes: SimpleChanges): void {}
 
@@ -54,7 +52,7 @@ export class NewDonerFormComponent implements OnInit, OnChanges {
 
   customValidator(control: FormControl) {
     const value = control.value;
-    if (value === 'Barm pidor') {
+    if (value !== 'Barm pidor') {
       return null; // значение валидно
     } else {
       return { invalidValue: true }; // значение невалидно
@@ -72,7 +70,7 @@ export class NewDonerFormComponent implements OnInit, OnChanges {
 
   onSubmit() {
     if (this.newDonerForm.valid) {
-      this.newDonerService.newDoner = {
+      const newDoner: Doner = {
         name: this.newDonerForm.controls['donerName'].value,
         coordinates: {
           lat: this.data.e.latlng.lat,
@@ -80,6 +78,11 @@ export class NewDonerFormComponent implements OnInit, OnChanges {
         },
         rating: this.newDonerForm.controls['review'].value,
       };
+
+      this.newDonerService.newDoner = newDoner;
+      this.newDonerService
+        .postNewDoner(newDoner)
+        .subscribe((res) => console.log(res));
     }
   }
 }

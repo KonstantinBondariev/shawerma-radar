@@ -1,3 +1,5 @@
+<button mat-flat-button (click)="getDoners()">Get Doners</button>
+
 <div class="container">
   <div *ngIf="options && currentCoord" class="map-container">
     <app-map [options]="options" [layersControl]="layersControl" id='main-map' [userСoordinates]="currentCoord"
