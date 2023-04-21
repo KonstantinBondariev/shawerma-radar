@@ -14,6 +14,9 @@ import { NewDonerFormComponent } from './components/new-doner-form/new-doner-for
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -32,6 +35,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatCardModule,
     ReactiveFormsModule,
     MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatButtonModule,
   ],
 })
 export class MapModule {}

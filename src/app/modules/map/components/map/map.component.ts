@@ -30,8 +30,13 @@ import 'leaflet-rotatedmarker';
 
 import * as turf from '@turf/turf';
 import { Doner } from '../../shared/types/doner';
-import { MatDialog } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { NewDonerFormComponent } from '../new-doner-form/new-doner-form.component';
+import { NewDonerService } from '../../services/new-doner.service';
 
 @Component({
   selector: 'app-map',
@@ -95,7 +100,10 @@ export class MapComponent implements OnDestroy, OnChanges {
   invisibleLines: L.Polyline[] = [];
   arrowPointers: L.Marker[] = [];
 
-  constructor(private dialog: MatDialog) {}
+  constructor(
+    private newDonerService: NewDonerService,
+    public dialog: MatDialog
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.map) {
@@ -122,13 +130,26 @@ export class MapComponent implements OnDestroy, OnChanges {
       this.updateArrowsPosition(this.invisibleLines); //&&&
     });
     map.on('click', (e: L.LeafletMouseEvent) => {
-      // this.addDenersMarkers(this.createNewDoner(e.latlng));
-      this.openDialog();
+      this.openDialog(e);
     });
   }
 
-  openDialog() {
-    this.dialog.open(NewDonerFormComponent, { width: '30%' });
+  openDialog(e: L.LeafletMouseEvent) {
+    const dialogRef = this.dialog.open(NewDonerFormComponent, {
+      data: { e },
+      width: '30%',
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      console.log('The dialog was closed');
+      if (this.newDonerService.newDoner) {
+        console.log(this.doners);
+        this.addDenersMarkers(
+          this.createNewDoner(this.newDonerService.newDoner)
+        );
+        console.log(this.doners);
+      }
+    });
   }
 
   onMapZoomEnd(e: ZoomAnimEvent | any) {
@@ -144,12 +165,7 @@ export class MapComponent implements OnDestroy, OnChanges {
       );
   }
 
-  createNewDoner(latlng: L.LatLng): Doner {
-    const doner: Doner = {
-      name: 'new Doner',
-      coordinates: { lat: latlng.lat, lon: latlng.lng },
-      rating: '5',
-    };
+  createNewDoner(doner: Doner): Doner {
     this.doners.push(doner);
     return doner;
   }
