@@ -18,6 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { HttpClientModule } from '@angular/common/http';
+import { FormComponent } from './components/form/form.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { HttpClientModule } from '@angular/common/http';
     MapComponent,
     SliderComponent,
     NewDonerFormComponent,
+    FormComponent,
   ],
   imports: [
     CommonModule,
@@ -35,6 +37,7 @@ import { HttpClientModule } from '@angular/common/http';
     MatDialogModule,
     MatCardModule,
     ReactiveFormsModule,
+    FormsModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,

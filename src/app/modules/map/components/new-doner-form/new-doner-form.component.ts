@@ -26,21 +26,29 @@ import { Doner } from '../../shared/types/doner';
 })
 export class NewDonerFormComponent implements OnInit, OnChanges {
   newDonerForm!: FormGroup;
+  isReady: boolean = false;
 
   constructor(
     private newDonerService: NewDonerService,
-    public dialogRef: MatDialogRef<NewDonerFormComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    public dialogRef: MatDialogRef<NewDonerFormComponent>
+  ) {
+    this.isReady = true;
+
+    this.initializeForm();
+    console.log('!!!!');
+  }
 
   ngOnInit(): void {
     this.initializeForm();
+    console.log(NewDonerFormComponent);
   }
 
   ngOnChanges(changes: SimpleChanges): void {}
 
   initializeForm() {
-    //&&&&
+    console.log('&&&&&');
+
     this.newDonerForm = new FormGroup({
       donerName: new FormControl('', [
         Validators.required,
@@ -48,6 +56,7 @@ export class NewDonerFormComponent implements OnInit, OnChanges {
       ]),
       review: new FormControl(''),
     });
+    this.isReady = true;
   }
 
   customValidator(control: FormControl) {

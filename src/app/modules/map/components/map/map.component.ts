@@ -37,6 +37,8 @@ import {
 } from '@angular/material/dialog';
 import { NewDonerFormComponent } from '../new-doner-form/new-doner-form.component';
 import { NewDonerService } from '../../services/new-doner.service';
+import { timeout } from 'rxjs';
+import { RootMapComponent } from '../../root-map.component';
 
 @Component({
   selector: 'app-map',
@@ -99,6 +101,7 @@ export class MapComponent implements OnDestroy, OnChanges {
 
   invisibleLines: L.Polyline[] = [];
   arrowPointers: L.Marker[] = [];
+  userMarker!: L.Marker;
 
   constructor(
     private newDonerService: NewDonerService,
@@ -106,11 +109,30 @@ export class MapComponent implements OnDestroy, OnChanges {
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
+    const arr = Object.keys(changes);
+    console.log(arr);
+
     if (this.map) {
-      this.doners.forEach((doner) => this.isDistanceLess(doner));
-      this.initMarkers();
-      this.updateLines(this.doners, this.map);
-      this.updateArrowsPosition(this.invisibleLines);
+      arr.forEach((item) => {
+        switch (item) {
+          case 'userСoordinates':
+            this.updateUserMarker();
+            console.log('userM');
+
+            break;
+          case 'doners':
+            this.updateDonersMarkers();
+            console.log('donerM');
+
+            break;
+          case 'searchRadius':
+            console.log('radius');
+
+            this.updateLines(this.doners, this.map);
+            this.updateArrowsPosition(this.invisibleLines);
+            break;
+        }
+      });
     }
   }
 
@@ -124,7 +146,8 @@ export class MapComponent implements OnDestroy, OnChanges {
     this.map$.emit(map);
     this.zoom = map.getZoom();
     this.zoom$.emit(this.zoom);
-    this.initMarkers();
+    this.updateUserMarker();
+    this.updateDonersMarkers();
     map.on('move', () => {
       this.updateLines(this.doners, map);
       this.updateArrowsPosition(this.invisibleLines); //&&&
@@ -134,35 +157,28 @@ export class MapComponent implements OnDestroy, OnChanges {
     });
   }
 
-  openDialog(e: L.LeafletMouseEvent) {
-    const dialogRef = this.dialog.open(NewDonerFormComponent, {
-      data: { e },
-      width: '30%',
-    });
-
-    dialogRef.afterClosed().subscribe(() => {
-      console.log('The dialog was closed');
-      if (this.newDonerService.newDoner) {
-        console.log(this.doners);
-        this.addDenersMarkers(
-          this.createNewDoner(this.newDonerService.newDoner)
-        );
-        console.log(this.doners);
-      }
-    });
-  }
-
   onMapZoomEnd(e: ZoomAnimEvent | any) {
     this.zoom = e.target.getZoom();
     this.zoom$.emit(this.zoom);
   }
 
-  addDenersMarkers(doner: Doner) {
-    L.marker([doner.coordinates.lat, doner.coordinates.lon], markerForDener)
-      .addTo(this.map)
-      .bindPopup(
-        `<b style="color: black; background-color: white">${doner.name}</b>`
-      );
+  openDialog(e: L.LeafletMouseEvent) {
+    const dialogRef = this.dialog.open(NewDonerFormComponent, {
+      data: { e },
+      width: document.documentElement.clientWidth < 800 ? '90%' : '30%',
+      enterAnimationDuration: 1000,
+    });
+
+    console.log(NewDonerFormComponent);
+
+    dialogRef.afterClosed().subscribe(() => {
+      console.log('The dialog was closed');
+      if (this.newDonerService.newDoner) {
+        console.log(this.doners);
+        this.addDenerMarker(this.createNewDoner(this.newDonerService.newDoner));
+        console.log(this.doners);
+      }
+    });
   }
 
   createNewDoner(doner: Doner): Doner {
@@ -170,51 +186,30 @@ export class MapComponent implements OnDestroy, OnChanges {
     return doner;
   }
 
-  initMarkers() {
-    //user marker
-    L.marker(
+  addDenerMarker(doner: Doner) {
+    L.marker([doner.coordinates.lat, doner.coordinates.lon], markerForDener)
+      .addTo(this.map)
+      .bindPopup(
+        `<b style="color: black; background-color: white">${doner.name}</b>`
+      );
+  }
+
+  updateDonersMarkers() {
+    //doners makers
+    this.doners.forEach((doner) => {
+      this.addDenerMarker(doner);
+    });
+  }
+
+  updateUserMarker(): void {
+    if (this.userMarker) this.userMarker.remove();
+
+    this.userMarker = L.marker(
       [this.userСoordinates.lat, this.userСoordinates.lon],
       markerForUser.markerUserIcon
     )
       .addTo(this.map)
       .bindPopup(markerForUser.popupUserInfo);
-    //doners makers
-    this.doners.forEach((doner) => {
-      this.addDenersMarkers(doner);
-    });
-  }
-
-  isDistanceLess(doner: Doner): boolean {
-    var userCoordinates = L.latLng(
-      this.userСoordinates.lat,
-      this.userСoordinates.lon
-    );
-    var donerCoordinates = L.latLng(
-      doner.coordinates.lat,
-      doner.coordinates.lon
-    );
-    var distance = userCoordinates.distanceTo(donerCoordinates); // вычисляем направление на объект
-    return distance < this.searchRadius ? true : false;
-  }
-
-  updateLines(doners: Doner[], map: L.Map) {
-    if (this.invisibleLines) {
-      this.invisibleLines.forEach((line) => line.remove());
-    }
-
-    const center = map.getCenter();
-    this.invisibleLines = [];
-
-    doners.forEach((doner) => {
-      if (this.isDistanceLess(doner)) {
-        const latLngs = [
-          center,
-          L.latLng(doner.coordinates.lat, doner.coordinates.lon),
-        ];
-        const polyline = L.polyline(latLngs, { color: 'null' }).addTo(map);
-        this.invisibleLines.push(polyline);
-      }
-    });
   }
 
   updateArrowsPosition(lines: L.Polyline[]) {
@@ -260,5 +255,38 @@ export class MapComponent implements OnDestroy, OnChanges {
         this.arrowPointers.push(arrow);
       }
     });
+  }
+
+  updateLines(doners: Doner[], map: L.Map) {
+    if (this.invisibleLines) {
+      this.invisibleLines.forEach((line) => line.remove());
+    }
+
+    const center = map.getCenter();
+    this.invisibleLines = [];
+
+    doners.forEach((doner) => {
+      if (this.isDistanceLess(doner)) {
+        const latLngs = [
+          center,
+          L.latLng(doner.coordinates.lat, doner.coordinates.lon),
+        ];
+        const polyline = L.polyline(latLngs, { color: 'null' }).addTo(map);
+        this.invisibleLines.push(polyline);
+      }
+    });
+  }
+
+  isDistanceLess(doner: Doner): boolean {
+    var userCoordinates = L.latLng(
+      this.userСoordinates.lat,
+      this.userСoordinates.lon
+    );
+    var donerCoordinates = L.latLng(
+      doner.coordinates.lat,
+      doner.coordinates.lon
+    );
+    var distance = userCoordinates.distanceTo(donerCoordinates); // вычисляем направление на объект
+    return distance < this.searchRadius ? true : false;
   }
 }

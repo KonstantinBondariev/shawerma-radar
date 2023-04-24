@@ -1,24 +1,22 @@
-<h2 mat-dialog-title>Add new Doner </h2>
+<div>
+  <h2 mat-dialog-title>Add new Doner </h2>
+  <div mat-dialog-content>
+    <form *ngIf="isReady" [formGroup]="newDonerForm" (submit)="onSubmit()">
+      <mat-form-field appearance="fill">
+        <mat-label for="first-name">Doner name: </mat-label>
+        <input matInput id="first-name" type="text" formControlName="donerName">
+        <mat-error *ngIf="newDonerForm.controls['donerName']">{{getErrorMessage()}}</mat-error>
+      </mat-form-field>
 
-<div mat-dialog-content>
+      <mat-form-field appearance="fill">
+        <mat-label for="last-name">Review: </mat-label>
+        <input matInput id="last-name" type="text" formControlName="review">
+      </mat-form-field>
 
-
-
-  <form [formGroup]="newDonerForm" (submit)="onSubmit()">
-    <mat-form-field appearance="fill">
-      <mat-label for="first-name">Doner name: </mat-label>
-      <input matInput id="first-name" type="text" formControlName="donerName">
-      <mat-error *ngIf="newDonerForm.controls['donerName']">{{getErrorMessage()}}</mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="fill">
-      <mat-label for="last-name">Review: </mat-label>
-      <input matInput id="last-name" type="text" formControlName="review">
-    </mat-form-field>
-
-    <div>
-      <button [disabled]="newDonerForm.invalid" mat-raised-button color="primary" [mat-dialog-close]=""
-        (click)="onSubmit()" cdkFocusInitial>Add new doner</button>
-    </div>
-  </form>
+      <div mat-dialog-actions>
+        <button [disabled]="newDonerForm.invalid" mat-raised-button color="primary" [mat-dialog-close]=""
+          (click)="onSubmit()" cdkFocusInitial>Add new doner</button>
+      </div>
+    </form>
+  </div>
 </div>

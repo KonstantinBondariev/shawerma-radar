@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -11,8 +12,12 @@ export class GeolocationService {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(resolve, reject);
       } else {
-        reject('Geolocation is not supported by this browser.');
+        reject(new Error('Geolocation is not supported by this browser.'));
       }
     });
+  }
+
+  watchLocation(callback: (position: GeolocationPosition) => void): number {
+    return navigator.geolocation.watchPosition(callback);
   }
 }

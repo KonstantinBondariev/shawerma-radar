@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { GeolocationService } from 'src/app/services/geolocation-service.service';
 import { doners } from './shared/data/donerData';
 
@@ -10,37 +10,49 @@ import { GetDonersDataService } from './services/get-doners-data.service';
   templateUrl: './root-map.component.html',
   styleUrls: ['./root-map.component.scss'],
 })
-export class RootMapComponent implements OnInit {
+export class RootMapComponent implements OnInit, OnDestroy {
   options!: MapOptions;
   layersControl!: any;
+
+  watchPositionId!: number;
   currentCoord!: { lat: number; lon: number };
   doners: Doner[] = doners;
 
   radiusValue!: number;
 
-  addItem(newItem: number) {
-    this.radiusValue = newItem;
-  }
-
   constructor(
     private geolocationService: GeolocationService,
     private getDonersData: GetDonersDataService
   ) {
-    this.geolocationService.getLocation().then((res) => {
-      this.options = this.setOptions(res.coords.latitude, res.coords.longitude);
-      this.layersControl = this.setOverLays(
-        res.coords.latitude,
-        res.coords.longitude
-      );
-      this.currentCoord = {
-        lat: res.coords.latitude,
-        lon: res.coords.longitude,
-      };
-    });
+    this.geolocationService
+      .getLocation()
+      .then((res) => {
+        this.options = this.setOptions(
+          res.coords.latitude,
+          res.coords.longitude
+        );
+        this.layersControl = this.setOverLays(
+          res.coords.latitude,
+          res.coords.longitude
+        );
+      })
+      .catch((err) => alert(err.message));
   }
 
   ngOnInit(): void {
     this.getDoners();
+    this.watchPositionId = this.geolocationService.watchLocation((position) => {
+      console.log(position.coords);
+
+      this.currentCoord = {
+        lat: position.coords.latitude,
+        lon: position.coords.longitude,
+      };
+    });
+  }
+
+  ngOnDestroy(): void {
+    navigator.geolocation.clearWatch(this.watchPositionId);
   }
 
   setOptions(latitude: number, longitude: number): MapOptions {
@@ -85,5 +97,9 @@ export class RootMapComponent implements OnInit {
 
   getDoners() {
     this.getDonersData.getDeners().subscribe((res) => (this.doners = res));
+  }
+
+  setRadiusValue(newItem: number) {
+    this.radiusValue = newItem;
   }
 }
