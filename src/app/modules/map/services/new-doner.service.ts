@@ -5,6 +5,8 @@ import { Doner } from '../shared/types/doner';
 
 const url: string =
   'https://shwerma-radar-default-rtdb.europe-west1.firebasedatabase.app/doners2/';
+const url2: string =
+  'https://shwerma-radar-default-rtdb.europe-west1.firebasedatabase.app/doners/';
 @Injectable({
   providedIn: 'root',
 })

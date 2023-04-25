@@ -18,7 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { HttpClientModule } from '@angular/common/http';
-import { FormComponent } from './components/form/form.component';
+import { CdkMenuModule } from '@angular/cdk/menu';
 
 @NgModule({
   declarations: [
@@ -26,7 +26,6 @@ import { FormComponent } from './components/form/form.component';
     MapComponent,
     SliderComponent,
     NewDonerFormComponent,
-    FormComponent,
   ],
   imports: [
     CommonModule,
@@ -43,6 +42,7 @@ import { FormComponent } from './components/form/form.component';
     MatInputModule,
     MatButtonModule,
     HttpClientModule,
+    CdkMenuModule,
   ],
 })
 export class MapModule {}

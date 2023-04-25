@@ -1,3 +1,9 @@
 <div class="map-container" leaflet [leafletOptions]="options" (leafletMapReady)="onMapReady($event)"
-  (leafletMapZoomEnd)="onMapZoomEnd($event)">
+  (leafletMapZoomEnd)="onMapZoomEnd($event)" [cdkContextMenuTriggerFor]="inner">
 </div>
+
+<ng-template #inner>
+  <div class="example-menu" cdkMenu>
+    <button class="example-menu-item" cdkMenuItem (click)="openSettingsDialog(mouseEvent)">Add new doner</button>
+  </div>
+</ng-template>

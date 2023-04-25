@@ -37,15 +37,16 @@ import {
 } from '@angular/material/dialog';
 import { NewDonerFormComponent } from '../new-doner-form/new-doner-form.component';
 import { NewDonerService } from '../../services/new-doner.service';
-import { timeout } from 'rxjs';
-import { RootMapComponent } from '../../root-map.component';
+import { NgZone } from '@angular/core';
+import { MyControl } from '../../shared/classes/myControl';
+import { GeolocationService } from 'src/app/services/geolocation-service.service';
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
 })
-export class MapComponent implements OnDestroy, OnChanges {
+export class MapComponent implements OnInit, OnDestroy, OnChanges {
   map$: EventEmitter<Map> = new EventEmitter();
   zoom$: EventEmitter<number> = new EventEmitter();
 
@@ -102,10 +103,13 @@ export class MapComponent implements OnDestroy, OnChanges {
   invisibleLines: L.Polyline[] = [];
   arrowPointers: L.Marker[] = [];
   userMarker!: L.Marker;
+  myControl!: L.Control;
+  mouseEvent!: L.LeafletMouseEvent;
 
   constructor(
     private newDonerService: NewDonerService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private zone: NgZone
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -136,6 +140,10 @@ export class MapComponent implements OnDestroy, OnChanges {
     }
   }
 
+  ngOnInit() {
+    this.myControl = new MyControl(this.userСoordinates);
+  }
+
   ngOnDestroy() {
     this.map.clearAllEventListeners;
     this.map.remove();
@@ -146,14 +154,17 @@ export class MapComponent implements OnDestroy, OnChanges {
     this.map$.emit(map);
     this.zoom = map.getZoom();
     this.zoom$.emit(this.zoom);
+
+    this.map.addControl(this.myControl);
+
     this.updateUserMarker();
     this.updateDonersMarkers();
     map.on('move', () => {
       this.updateLines(this.doners, map);
       this.updateArrowsPosition(this.invisibleLines); //&&&
     });
-    map.on('click', (e: L.LeafletMouseEvent) => {
-      this.openDialog(e);
+    map.on('contextmenu', (e: L.LeafletMouseEvent) => {
+      this.mouseEvent = e;
     });
   }
 
@@ -162,11 +173,15 @@ export class MapComponent implements OnDestroy, OnChanges {
     this.zoom$.emit(this.zoom);
   }
 
+  openSettingsDialog(e: L.LeafletMouseEvent) {
+    this.zone.run(() => {
+      this.openDialog(e);
+    });
+  }
   openDialog(e: L.LeafletMouseEvent) {
     const dialogRef = this.dialog.open(NewDonerFormComponent, {
       data: { e },
       width: document.documentElement.clientWidth < 800 ? '90%' : '30%',
-      enterAnimationDuration: 1000,
     });
 
     console.log(NewDonerFormComponent);
@@ -202,7 +217,10 @@ export class MapComponent implements OnDestroy, OnChanges {
   }
 
   updateUserMarker(): void {
-    if (this.userMarker) this.userMarker.remove();
+    if (this.userMarker) {
+      this.userMarker.remove();
+      console.log('del');
+    }
 
     this.userMarker = L.marker(
       [this.userСoordinates.lat, this.userСoordinates.lon],
@@ -210,6 +228,7 @@ export class MapComponent implements OnDestroy, OnChanges {
     )
       .addTo(this.map)
       .bindPopup(markerForUser.popupUserInfo);
+    console.log('create');
   }
 
   updateArrowsPosition(lines: L.Polyline[]) {

@@ -4,7 +4,6 @@ export const markerForUser = {
   markerUserIcon: {
     icon: L.icon({
       iconSize: [25, 25],
-      iconAnchor: [10, 41],
       popupAnchor: [2, -40],
       iconUrl: 'assets/img/myLocation.png',
     }),
