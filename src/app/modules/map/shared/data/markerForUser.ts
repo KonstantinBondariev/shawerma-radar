@@ -9,4 +9,5 @@ export const markerForUser = {
     }),
   },
   popupUserInfo: `<b style="color: black; background-color: white">Your location</b>`,
+  title: 'its you',
 };

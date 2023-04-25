@@ -39,7 +39,6 @@ import { NewDonerFormComponent } from '../new-doner-form/new-doner-form.componen
 import { NewDonerService } from '../../services/new-doner.service';
 import { NgZone } from '@angular/core';
 import { MyControl } from '../../shared/classes/myControl';
-import { GeolocationService } from 'src/app/services/geolocation-service.service';
 
 @Component({
   selector: 'app-map',
@@ -113,25 +112,20 @@ export class MapComponent implements OnInit, OnDestroy, OnChanges {
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    const arr = Object.keys(changes);
-    console.log(arr);
+    const changesArr = Object.keys(changes);
 
     if (this.map) {
-      arr.forEach((item) => {
-        switch (item) {
+      changesArr.forEach((change) => {
+        switch (change) {
           case 'userСoordinates':
             this.updateUserMarker();
-            console.log('userM');
-
             break;
+
           case 'doners':
             this.updateDonersMarkers();
-            console.log('donerM');
-
             break;
-          case 'searchRadius':
-            console.log('radius');
 
+          case 'searchRadius':
             this.updateLines(this.doners, this.map);
             this.updateArrowsPosition(this.invisibleLines);
             break;
