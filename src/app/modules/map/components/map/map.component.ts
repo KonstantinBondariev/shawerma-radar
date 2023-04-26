@@ -51,41 +51,7 @@ export class MapComponent implements OnInit, OnDestroy, OnChanges {
 
   @ViewChild('newDonerForm') newDonerForm: any;
 
-  @Input() options: MapOptions = {
-    layers: [
-      tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        opacity: 1,
-        maxZoom: 19,
-        detectRetina: true,
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }),
-    ],
-    zoom: 15,
-    center: latLng(50, 30),
-  };
-  //  исправить для отображение активного периметра шаверма-радара
-  @Input() layersControl: any = {
-    baseLayers: {
-      'Open Street Map': tileLayer(
-        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        { maxZoom: 18, attribution: '...' }
-      ),
-      'Open Cycle Map': tileLayer(
-        'https://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png',
-        { maxZoom: 18, attribution: '...' }
-      ),
-    },
-    overlays: {
-      'Big Circle': circle([50, 30], { radius: 5000 }),
-      'Big Square': polygon([
-        [46.8, -121.55],
-        [46.9, -121.55],
-        [46.9, -121.7],
-        [46.8, -121.7],
-      ]),
-    },
-  };
+  @Input() options!: MapOptions;
 
   @Input() userСoordinates!: {
     lat: number;
@@ -148,14 +114,12 @@ export class MapComponent implements OnInit, OnDestroy, OnChanges {
     this.map$.emit(map);
     this.zoom = map.getZoom();
     this.zoom$.emit(this.zoom);
-
     this.map.addControl(this.myControl);
-
     this.updateUserMarker();
     this.updateDonersMarkers();
     map.on('move', () => {
       this.updateLines(this.doners, map);
-      this.updateArrowsPosition(this.invisibleLines); //&&&
+      this.updateArrowsPosition(this.invisibleLines);
     });
     map.on('contextmenu', (e: L.LeafletMouseEvent) => {
       this.mouseEvent = e;
@@ -204,7 +168,6 @@ export class MapComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   updateDonersMarkers() {
-    //doners makers
     this.doners.forEach((doner) => {
       this.addDenerMarker(doner);
     });
@@ -213,7 +176,6 @@ export class MapComponent implements OnInit, OnDestroy, OnChanges {
   updateUserMarker(): void {
     if (this.userMarker) {
       this.userMarker.remove();
-      console.log('del');
     }
 
     this.userMarker = L.marker(
@@ -222,7 +184,6 @@ export class MapComponent implements OnInit, OnDestroy, OnChanges {
     )
       .addTo(this.map)
       .bindPopup(markerForUser.popupUserInfo);
-    console.log('create');
   }
 
   updateArrowsPosition(lines: L.Polyline[]) {
@@ -263,7 +224,7 @@ export class MapComponent implements OnInit, OnDestroy, OnChanges {
           intersection.features[0].geometry.coordinates[1],
           intersection.features[0].geometry.coordinates[0]
         );
-
+        //result
         const arrow = L.marker(intersectionPoint, markerArrow).addTo(this.map);
         this.arrowPointers.push(arrow);
       }
@@ -271,12 +232,8 @@ export class MapComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   updateLines(doners: Doner[], map: L.Map) {
-    if (this.invisibleLines) {
-      this.invisibleLines.forEach((line) => line.remove());
-    }
-
-    const center = map.getCenter();
     this.invisibleLines = [];
+    const center = map.getCenter();
 
     doners.forEach((doner) => {
       if (this.isDistanceLess(doner)) {

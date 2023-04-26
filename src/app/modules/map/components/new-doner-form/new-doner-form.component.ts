@@ -53,10 +53,12 @@ export class NewDonerFormComponent implements OnInit, OnChanges {
 
   customValidator(control: FormControl) {
     const value = control.value;
-    if (value !== 'Barm pidor') {
-      return null; // значение валидно
+    const regex = /(?:бонд|bond).*?(?:пидор|gey|pidor)/i;
+
+    if (!value.match(regex)) {
+      return null;
     } else {
-      return { invalidValue: true }; // значение невалидно
+      return { invalidValue: true };
     }
   }
 

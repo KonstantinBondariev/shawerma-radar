@@ -1,10 +1,23 @@
-<div class="container">
-  <div *ngIf="options && currentCoord" class="map-container">
-    <app-map [options]="options" [layersControl]="layersControl" id='main-map' [userСoordinates]="currentCoord"
-      [doners]="doners" [searchRadius]="radiusValue"></app-map>
+<div class="container" *ngIf="options && currentCoord; else elseBlock">
+  <div class="map-container">
+    <app-map [options]="options" id='main-map' [userСoordinates]="currentCoord" [doners]="doners"
+      [searchRadius]="radiusValue"></app-map>
   </div>
 
   <div class="slider">
     <app-slider (radiusValue)="setRadiusValue($event)"></app-slider>
   </div>
 </div>
+
+<ng-template #elseBlock>
+  <mat-card class="geo-error">
+    <mat-card-header>
+      <mat-card-title>
+        No access to geolocation
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>For Shawуrma-radar to work, please allow access to geolocation for this site</p>
+    </mat-card-content>
+  </mat-card>
+</ng-template>

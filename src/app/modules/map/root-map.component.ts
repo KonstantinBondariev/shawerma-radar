@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { GeolocationService } from 'src/app/services/geolocation-service.service';
 import { doners } from './shared/data/donerData';
 
-import { Map, MapOptions, tileLayer, latLng, circle, polygon } from 'leaflet';
+import { MapOptions, tileLayer, latLng, circle, polygon } from 'leaflet';
 import { Doner } from './shared/types/doner';
 import { GetDonersDataService } from './services/get-doners-data.service';
 @Component({
@@ -12,7 +12,6 @@ import { GetDonersDataService } from './services/get-doners-data.service';
 })
 export class RootMapComponent implements OnInit, OnDestroy {
   options!: MapOptions;
-  layersControl!: any;
 
   watchPositionId!: number;
   currentCoord!: { lat: number; lon: number };
@@ -28,10 +27,6 @@ export class RootMapComponent implements OnInit, OnDestroy {
       .getLocation()
       .then((res) => {
         this.options = this.setOptions(
-          res.coords.latitude,
-          res.coords.longitude
-        );
-        this.layersControl = this.setOverLays(
           res.coords.latitude,
           res.coords.longitude
         );
@@ -68,30 +63,6 @@ export class RootMapComponent implements OnInit, OnDestroy {
       ],
       zoom: 15,
       center: latLng(latitude, longitude),
-    };
-  }
-
-  setOverLays(latitude: number, longitude: number): any {
-    return {
-      baseLayers: {
-        'Open Street Map': tileLayer(
-          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-          { maxZoom: 18, attribution: '...' }
-        ),
-        'Open Cycle Map': tileLayer(
-          'https://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png',
-          { maxZoom: 18, attribution: '...' }
-        ),
-      },
-      overlays: {
-        'Big Circle': circle([latitude, longitude], { radius: 5000 }),
-        'Big Square': polygon([
-          [46.8, -121.55],
-          [46.9, -121.55],
-          [46.9, -121.7],
-          [46.8, -121.7],
-        ]),
-      },
     };
   }
 
