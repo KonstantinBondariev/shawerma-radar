@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { GeolocationService } from 'src/app/services/geolocation-service.service';
+import { doners } from './shared/data/donerData';
 
 import { MapOptions, tileLayer, latLng, circle, polygon } from 'leaflet';
 import { Doner } from './shared/types/doner';
@@ -14,7 +15,7 @@ export class RootMapComponent implements OnInit, OnDestroy {
 
   watchPositionId!: number;
   currentCoord!: { lat: number; lon: number };
-  doners!: Doner[];
+  doners: Doner[] = [];
 
   radiusValue!: number;
 
